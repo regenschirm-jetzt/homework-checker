@@ -190,6 +190,14 @@ def set_style_and_bg():
         p, label, li, span {{
             color: #E0E0E0 !important;
         }}
+        h1 {{
+            color: #FFFFFF !important;
+            font-family: "HarmonyOS Sans", "Microsoft YaHei", sans-serif;
+            text-align: center;
+            margin-bottom: 0.2em;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }}
+
 
         </style>
 
@@ -590,4 +598,5 @@ st.sidebar.radio(
 
 st.sidebar.markdown("---")
 st.sidebar.button("🔄 重置系统", on_click=reset_callback)
+
 
