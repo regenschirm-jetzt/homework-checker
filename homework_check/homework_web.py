@@ -125,7 +125,78 @@ components.html(
 
 
 
+def set_style_and_bg():
+    # === 背景视频 HTML（使用 GitHub Raw 地址）===
+    video_html = """
+    <video autoplay muted loop playsinline id="myVideo">
+        <source src="https://raw.githubusercontent.com/regenschirm-jetzt/homework-checker/main/homework_check/a.mp4" type="video/mp4">
+    </video>
+    """
 
+    st.markdown(
+        f"""
+        <style>
+        /* ===== 0. 彻底清空 Streamlit 最底层背景（Cloud 必须） ===== */
+        html, body {{
+            background: transparent !important;
+        }}
+
+        .stAppViewContainer {{
+            background: transparent !important;
+        }}
+
+        .stApp {{
+            background: transparent !important;
+        }}
+
+        /* ===== 1. 视频背景 ===== */
+        #myVideo {{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: -1;
+        }}
+
+        /* ===== 2. 顶栏深色化 ===== */
+        header[data-testid="stHeader"] {{
+            background-color: #0E1117 !important;
+            opacity: 0.95 !important;
+        }}
+        header[data-testid="stHeader"] * {{
+            fill: #FFFFFF !important;
+            color: #FFFFFF !important;
+        }}
+
+        /* ===== 3. 主容器磨砂黑 ===== */
+        .main .block-container {{
+            background-color: rgba(20, 20, 25, 0.85);
+            padding: 3rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
+            backdrop-filter: blur(6px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 95%;
+        }}
+
+        /* ===== 4. 全局文字颜色 ===== */
+        h1, h2, h3, h4, h5, h6 {{
+            color: #FFFFFF !important;
+            font-family: "HarmonyOS Sans", "Microsoft YaHei", sans-serif;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+        }}
+        p, label, li, span {{
+            color: #E0E0E0 !important;
+        }}
+
+        </style>
+
+        {video_html}
+        """,
+        unsafe_allow_html=True
+    )
 
 
 
@@ -138,7 +209,7 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="collapsed"  # 初始默认收起
 )
-
+set_style_and_bg()
 # ==========================================
 # 2. 状态初始化
 # ==========================================
@@ -160,37 +231,12 @@ PAGE_RESULTS = "📊 结果看板"
 
 
 
-def set_style_and_bg():
-    video_html = """
-    <video autoplay muted loop playsinline id="myVideo">
-      <source src="https://raw.githubusercontent.com/regenschirm-jetzt/homework-checker/main/homework_check/a.mp4" type="video/mp4">
-    </video>
-    """
-
-    st.markdown(
-        f"""
-        <style>
-        .stApp {{ background: transparent !important; }}
-
-        #myVideo {{
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-            z-index: -1;
-        }}
-        </style>
-
-        {video_html}
-        """,
-        unsafe_allow_html=True
-    )
 
 
 
-set_style_and_bg()
+
+
+
 
 
 # ==========================================
@@ -544,3 +590,4 @@ st.sidebar.radio(
 
 st.sidebar.markdown("---")
 st.sidebar.button("🔄 重置系统", on_click=reset_callback)
+
