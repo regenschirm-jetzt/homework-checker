@@ -157,232 +157,40 @@ PAGE_RESULTS = "📊 结果看板"
 # ==========================================
 # 3. 视觉样式与背景
 # ==========================================
-@st.cache_data(show_spinner=False)
-def get_video_base64(video_file):
-    if not os.path.exists(video_file):
-        return None
-    with open(video_file, "rb") as f:
-        video_bytes = f.read()
-    return base64.b64encode(video_bytes).decode()
 
 
-def set_style_and_bg(video_file):
-    b64_video = get_video_base64(video_file)
 
-    video_html = ""
-    if b64_video:
-        video_html = f"""
-<video autoplay muted loop id="myVideo" playsinline>
-  <source src="https://raw.githubusercontent.com/regenschirm-jetzt/homework-checker/main/homework_check/a.mp4" type="video/mp4">
-</video>
-
-"""
+def set_style_and_bg():
+    video_html = """
+    <video autoplay muted loop playsinline id="myVideo">
+      <source src="https://raw.githubusercontent.com/regenschirm-jetzt/homework-checker/main/homework_check/a.mp4" type="video/mp4">
+    </video>
+    """
 
     st.markdown(
         f"""
         <style>
-        /* 1. 基础背景设置 */
         .stApp {{ background: transparent !important; }}
+
         #myVideo {{
-            position: fixed; right: 0; bottom: 0;
-            min-width: 100%; min-height: 100%;
-            z-index: -1; object-fit: cover;
-        }}
-
-        /* 2. 顶栏深色化 */
-        header[data-testid="stHeader"] {{
-            background-color: #0E1117 !important;
-            opacity: 0.95 !important;
-        }}
-        header[data-testid="stHeader"] * {{
-            fill: #FFFFFF !important;
-            color: #FFFFFF !important;
-        }}
-
-        /* 3. 主容器磨砂黑 */
-        .main .block-container {{
-            background-color: rgba(20, 20, 25, 0.85);
-            padding: 3rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 30px rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            max-width: 95%;
-        }}
-
-        /* 4. 全局文字颜色 */
-        h1, h2, h3, h4, h5, h6 {{
-            color: #FFFFFF !important;
-            font-family: "HarmonyOS Sans", "Microsoft YaHei", sans-serif;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-        }}
-        h1 {{ text-align: center; padding-bottom: 20px; }}
-        p, label, li, span, .stMarkdown, .stRadio label {{
-            color: #E0E0E0 !important;
-        }}
-
-        /* 5. 指标数值亮白 */
-        [data-testid="stMetricValue"] {{ color: #FFFFFF !important; }}
-        [data-testid="stMetricValue"] div {{
-            color: #FFFFFF !important; 
-            text-shadow: 0 0 10px rgba(255,255,255,0.4);
-        }}
-        [data-testid="stMetricLabel"] label {{ color: #FB7299 !important; }}
-
-        /* 6. 下载按钮白底黑字 */
-        [data-testid="stDownloadButton"] button {{
-            background-color: #FFFFFF !important;
-            border: 1px solid #CCCCCC !important;
-        }}
-        [data-testid="stDownloadButton"] button * {{
-            color: #000000 !important;
-            font-weight: bold !important;
-        }}
-        [data-testid="stDownloadButton"] button:hover {{
-            background-color: #F0F0F0 !important;
-            border-color: #FB7299 !important;
-        }}
-        [data-testid="stDownloadButton"] button:hover p {{ color: #FB7299 !important; }}
-
-        /* 7. 输入框 & 上传框 (白底黑字) */
-        [data-testid="stFileUploader"] section {{
-            background-color: #FFFFFF !important;
-            border: 1px solid #CCCCCC !important;
-        }}
-        [data-testid="stFileUploader"] section * {{
-            color: #000000 !important;
-            text-shadow: none !important;
-        }}
-        [data-testid="stFileUploader"] button {{
-            background-color: #F0F2F6 !important;
-            color: #000000 !important;
-            border-color: #999 !important;
-        }}
-        .stFileUploader > label, .stTextInput > label {{
-            color: #FB7299 !important; 
-            font-weight: bold;
-            font-size: 1.1rem;
-        }}
-        .stTextInput > div > div > input {{
-            background-color: #FFFFFF !important;
-            color: #000000 !important;
-            border: 1px solid #CCCCCC;
-        }}
-
-        /* === B. 下面的框：已上传文件列表 (最终优化版) === */
-        
-        /* 0. 新增：全局滚动条样式 (小滑块) */
-        /* 针对 Chrome/Edge/Safari 等浏览器 */
-        ::-webkit-scrollbar {{
-            width: 6px;
-            height: 6px;
-            background-color: transparent;
-        }}
-        ::-webkit-scrollbar-thumb {{
-            background-color: #FB7299 !important; /* 统一滑块颜色：主题粉 */
-            border-radius: 10px;
-        }}
-        ::-webkit-scrollbar-track {{
-            background: transparent;
-        }}
-
-        /* 1. 外层卡片主体：白底、圆角 */
-        [data-testid="stFileUploaderFile"] {{
-            background-color: #FFFFFF !important;
-            border: 1px solid #E0E0E0 !important;
-            border-radius: 12px !important;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.05) !important;
-            margin-bottom: 10px !important;
-            padding: 8px 12px !important;
-            align-items: center !important;
-        }}
-
-        /* 2. 消除方块背景：强制所有内部容器透明 */
-        [data-testid="stFileUploaderFile"] div,
-        [data-testid="stFileUploaderFile"] section {{
-            background-color: transparent !important;
-            background: transparent !important;
-        }}
-
-        /* 3. 文字颜色修复 */
-        [data-testid="stFileUploaderFile"] span,
-        [data-testid="stFileUploaderFile"] small,
-        [data-testid="stFileUploaderFile"] div {{
-            color: #333333 !important; /* 字体深灰，比纯黑柔和一点 */
-            font-family: sans-serif !important;
-            text-shadow: none !important;
-        }}
-
-        /* 4. 文件图标修复：平时显示为黑色剪影 */
-        [data-testid="stFileUploaderFile"] svg {{
-            background-color: transparent !important;
-            filter: brightness(0) !important; 
-            opacity: 0.6 !important; /* 平时颜色淡一点，不抢眼 */
-        }}
-
-        /* 5. 删除按钮 (X) 的特别处理 */
-        /* A. 按钮容器平时样式 */
-        [data-testid="stFileUploaderFile"] button {{
-            border: none !important;
-            background: transparent !important;
-            transition: all 0.2s ease; /* 加个小动画 */
-        }}
-        
-        /* B. 鼠标放上去时：背景变极淡的红色 */
-        [data-testid="stFileUploaderFile"] button:hover {{
-            background-color: rgba(255, 50, 50, 0.5) !important; /* 红色背景调淡 */
-        }}
-        
-        /* C. 鼠标放上去时：叉号图标变红 */
-        [data-testid="stFileUploaderFile"] button:hover svg {{
-            filter: none !important; /* 取消黑色滤镜 */
-            opacity: 1 !important;
-            transform: scale(1.1); /* 稍微放大一点点 */
-        }}
-        
-        /* === C. 其他输入框保持原样 === */
-        .stFileUploader > label, .stTextInput > label {{
-            color: #FB7299 !important; 
-            font-weight: bold;
-            font-size: 1.1rem;
-        }}
-        .stTextInput > div > div > input {{
-            background-color: #FFFFFF !important;
-            color: #000000 !important;
-            border: 1px solid #CCCCCC;
-        }}
-        /* 8. 侧边栏与按钮 */
-        [data-testid="stSidebar"] {{
-            background-color: rgba(18, 18, 24, 0.98);
-            border-right: 1px solid rgba(255,255,255,0.1);
-        }}
-        .stButton > button {{
-            background-color: #FB7299 !important;
-            color: white !important;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-        }}
-        .stButton > button:hover {{
-            background-color: #FF8EB3 !important;
-            transform: translateY(-2px);
-        }}
-
-        /* 9. 表格 */
-        .stDataFrame {{ background-color: #2D2D2D; border-radius: 8px; padding: 5px; }}
-        div[data-testid="stTable"] {{ color: #E0E0E0 !important; }}
-        .stTabs [aria-selected="true"] {{
-            color: #FB7299 !important;
-            border-bottom-color: #FB7299 !important;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: -1;
         }}
         </style>
+
         {video_html}
         """,
         unsafe_allow_html=True
     )
 
 
-set_style_and_bg('a.mp4')
+
+set_style_and_bg()
 
 
 # ==========================================
